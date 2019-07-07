@@ -105,7 +105,10 @@ public class Utils {
                 Environment.DIRECTORY_PICTURES), "CameraDemo");
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                return null;
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                File mediaFile = new File(mediaStorageDir.getPath() + File.separator+
+                        "IMG_"+timeStamp+".jpg");
+                return mediaFile;
             }
         }
 

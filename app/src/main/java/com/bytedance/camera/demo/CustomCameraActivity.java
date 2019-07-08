@@ -33,8 +33,8 @@ public class CustomCameraActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private int rotationDegree = 0;
-    private File file;
-
+    //private File file;
+    private int zoomValue = 0;
     //private MediaRecorder mediaRecorder = new MediaRecorder();
 
     @Override
@@ -109,21 +109,31 @@ public class CustomCameraActivity extends AppCompatActivity {
         findViewById(R.id.btn_facing).setOnClickListener(v -> {
             //todo 切换前后摄像头
             releaseCameraAndPreview();
-            /*if (CAMERA_TYPE == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            if (CAMERA_TYPE == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                mCamera = Camera.open(CAMERA_TYPE);
-                rotationDegree = getCameraDisplayOrientation(CAMERA_TYPE);
-            } else {}*/
-            CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                mCamera = Camera.open(CAMERA_TYPE);
-                rotationDegree = getCameraDisplayOrientation(CAMERA_TYPE);
-            mCamera.setDisplayOrientation(rotationDegree);
-            mCamera.startPreview();
+                //mCamera = Camera.open(CAMERA_TYPE);
+                //rotationDegree = getCameraDisplayOrientation(CAMERA_TYPE);
+            } else {
+                CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_FRONT;
+            }
+            mCamera = getCamera(CAMERA_TYPE);
+            try {
+                mCamera.setPreviewDisplay(holder);
+                mCamera.startPreview();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //startPreview(holder);
         });
 
         findViewById(R.id.btn_zoom).setOnClickListener(v -> {
             //todo 调焦，需要判断手机是否支持
+            Camera.Parameters params = mCamera.getParameters();
+            final int MAX = params.getMaxZoom();
+            int zoomValue = params.getZoom();
+            zoomValue += 1;
+            params.setZoom(zoomValue);
+            mCamera.setParameters(params);
         });
     }
 
@@ -189,6 +199,7 @@ public class CustomCameraActivity extends AppCompatActivity {
 
     private void releaseCameraAndPreview() {
         //todo 释放camera资源
+        mCamera.stopPreview();
         mCamera.release();
         mCamera = null;
     }
